@@ -33,12 +33,21 @@ router.post("/", async (req, res, next) => {
 				tlds: { allow: ["com", "net"] },
 			})
 			.required(),
-		phone: Joi.string().min(7).max(15).required(),
+		phone: Joi.string()
+			.min(7)
+			.max(15)
+			.pattern(/^\(\d{3}\) \d{3}-\d{4}$/)
+			.required(),
 	});
 	const validationResult = schema.validate(req.body);
 
 	if (validationResult.error) {
-		return res.status(400).json({ message: "missing required name field" });
+		return res
+			.status(400)
+			.json({
+				message: "missing required name field",
+				error: validationResult.error.details[0].message,
+			});;
 	}
 	const { name, email, phone } = await req.body;
 	const data = await addContact(name, email, phone);
@@ -63,7 +72,7 @@ router.put("/:contactId", async (req, res, next) => {
 				tlds: { allow: ["com", "net"] },
 			})
 			.required(),
-		phone: Joi.string().min(7).max(15).required(),
+		phone: Joi.string().min(7).max(15).pattern(/^\(\d{3}\) \d{3}-\d{4}$/).required(),
 	});
 	const validationResult = schema.validate(req.body);
 
@@ -72,7 +81,7 @@ router.put("/:contactId", async (req, res, next) => {
 			.status(400)
 			.json({
 				message: "missing fields",
-				error: validationResult.error.details,
+				error: validationResult.error.details[0].message,
 			});
 	}
 	const id = req.params.contactId;
