@@ -1,6 +1,6 @@
 const { HttpError } = require("../helpers");
 
-const contactValidation = (schema) => {
+const validateBody = (schema) => {
 	const func = (req, res, next) => {
 		const { error } = schema.validate(req.body);
 
@@ -12,4 +12,4 @@ const contactValidation = (schema) => {
 	return func;
 };
 
-module.exports = contactValidation;
+module.exports = validateBody;
